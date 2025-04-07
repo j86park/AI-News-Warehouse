@@ -153,15 +153,29 @@ class NewsFetcher:
         # Save all articles
         self.save_articles(all_articles)
         
-        # Send to API
+        # Send to API and handle responses
         api_url = "http://localhost:8000/news/raw"
+        successful_sends = 0
+        failed_sends = 0
+        
         for article in all_articles:
             try:
                 response = requests.post(api_url, json=article)
                 response.raise_for_status()
-                print(f"Successfully sent article: {article['title']}")
+                response_data = response.json()
+                
+                if response_data.get("status") == "pending_summary":
+                    print(f"Successfully sent article: {article['title']} (ID: {response_data.get('id')})")
+                    successful_sends += 1
+                else:
+                    print(f"Unexpected response for article: {article['title']}")
+                    failed_sends += 1
+                    
             except requests.exceptions.RequestException as e:
                 print(f"Error sending article to API: {e}")
+                failed_sends += 1
+        
+        print(f"\nSummary: {successful_sends} articles sent successfully, {failed_sends} failed")
 
 if __name__ == "__main__":
     # Example usage
