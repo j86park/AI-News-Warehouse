@@ -17,11 +17,11 @@ class DatabaseManager:
         """Create a connection pool to the database"""
         try:
             self.pool = await asyncpg.create_pool(
-                user=os.getenv("DB_USER", "postgres"),
-                password=os.getenv("DB_PASSWORD", "postgres"),
-                database=os.getenv("DB_NAME", "news_warehouse"),
-                host=os.getenv("DB_HOST", "localhost"),
-                port=os.getenv("DB_PORT", "5432")
+                user=self.config.DB_USER,
+                password=self.config.DB_PASSWORD,
+                database=self.config.DB_NAME,
+                host=self.config.DB_HOST,
+                port=self.config.DB_PORT
             )
             print("Successfully connected to the database")
         except Exception as e:
